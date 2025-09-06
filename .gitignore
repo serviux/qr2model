@@ -49,3 +49,7 @@ freeze/
 # Environments where you can install packages that aren’t part of your app’s dependencies.
 node_modules/
 bower_components/
+
+#extra files
+*.png
+*.stl
