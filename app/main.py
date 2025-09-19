@@ -5,8 +5,8 @@ QR code and takes said code and converts it into a 3d model.
 
 
 import argparse
-from qr_constructor_3d import QRGenerator3d
-from qr_constructor_3d import MeshConstructionParams
+from app.qr_constructor.qr_constructor_3d import QRGenerator3d
+from app.qr_constructor.qr_constructor_3d import MeshConstructionParams
 
 def validate_args(args:argparse.Namespace) -> bool:
     valid = True
@@ -15,8 +15,6 @@ def validate_args(args:argparse.Namespace) -> bool:
         valid = False
         print("Message is required")
     return valid
-
-
 
 
 def main():
