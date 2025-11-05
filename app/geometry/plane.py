@@ -1,7 +1,9 @@
+"""A helper class for containing the information about plane objects which are used during the mesh construction process"""
+
 from dataclasses import dataclass
 from typing import Iterable
-from vertex import Vertex
-from vertex import VERTEX_ORDER
+from .vertex import Vertex
+from .vertex import VERTEX_ORDER
 
 
 @dataclass

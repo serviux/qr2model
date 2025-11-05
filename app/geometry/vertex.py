@@ -1,36 +1,40 @@
+"""Helper classes containing information about vertices and the order in which they are generated in the Mesh Constructor"""
 from dataclasses import dataclass
-from enum import Enum
+from enum import IntEnum
 
-class VERTEX_ORDER(Enum):
+class VERTEX_ORDER(IntEnum):
     """An enumeration of vertices generated """
-    TOP_LEFT = 0
-    BOTTOM_LEFT = 1
-    TOP_RIGHT = 2
-    BOTTOM_RIGHT = 3
+    TOP_LEFT:int = 0
+    BOTTOM_LEFT:int = 1
+    TOP_RIGHT:int = 2
+    BOTTOM_RIGHT:int = 3
 
 @dataclass
 class Vertex:
     """Class for keeping track of a vertex's coordinates"""
-    x:float = 0
-    y:float = 0 
-    z:float = 0
+    x:int = 0
+    y:int = 0
+    z:int = 0
 
-    def transform(self, a:float, b:float, c:float) ->  None:
+    def transform(self, a:int, b:int, c:int) ->  'Vertex':
         """Transforms the vertex's coordinates by a given matrix"""
         self.x += a
         self.y += b
         self.z += c
+        return self
 
-    def scale(self, a:float, b:float, c:float) -> None:
+    def scale(self, a:int, b:int, c:int) -> 'Vertex':
         """Scales the vertex's coordinates by a given matrix"""
         self.x *= a
         self.y *= b
         self.z *= c
+        return self
 
     def __str__(self) -> str:
         return f"({self.x}, {self.y}, {self.z})"
 
     def to_list(self) -> list:
+        """Converts vertex to a list in order x,y,z"""
         return [self.x, self.y, self.z]
     
     def is_below(self, other_vertex: 'Vertex') -> bool:
