@@ -12,8 +12,9 @@ import qrcode
 
 
 
+
 @dataclass
-class MeshConstructionParams: 
+class MeshConstructionParams:
     """Handles the parameters needed to construct the mesh for the qr code"""
     size:float = 0
     depth:float = 0
@@ -214,6 +215,13 @@ class QRGenerator3d:
         qr_mesh = mesh.Mesh(np.zeros(self.faces.shape[0], dtype=mesh.Mesh.dtype))
         for i, f in enumerate(self.faces):
             for j in range(3):
-                qr_mesh.vectors[i][j] = vertices_as_list[f[j],:]
+                qr_mesh.vectors[i][j] = vertices_as_list[f[j]]
         
         return qr_mesh
+    
+
+    def save_mesh(self, qr_mesh:mesh.Mesh) -> None:
+        """Saves the mesh to the given file name"""
+        
+        filename = f"qr_mesh_{hash(self)}.stl"
+        qr_mesh.save(filename)

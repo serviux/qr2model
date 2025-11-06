@@ -32,6 +32,7 @@ def main():
 
 
 
+
     args  = parser.parse_args()
     if validate_args(args):
         params: MeshConstructionParams = MeshConstructionParams(size=args.size,
@@ -40,8 +41,7 @@ def main():
         qr_gen: QRGenerator3d = QRGenerator3d(params=params, qr_message=args.message)
         qr = qr_gen.generate_qr_code(args.message)
         mesh = qr_gen.construct_mesh(params, qr)
-        mesh.save("test.stl")
-
+        qr_gen.save_mesh(mesh)
 
 if __name__ == "__main__":
     main()
