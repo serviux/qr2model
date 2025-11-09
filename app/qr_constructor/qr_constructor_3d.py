@@ -91,10 +91,7 @@ class QRGenerator3d:
 
     def _build_faces(self) -> None:
         """Generate the faces of the 3d model from the list of vertices"""
-
-
-        top_idx_displacement:int = 8
-
+        
         number_of_ahead_groups_processed = 0
 
         for starting_idx in range(0, len(self.vertices), 4):
@@ -111,14 +108,14 @@ class QRGenerator3d:
                 third_group:Plane =   Plane.from_iterable(self.vertices[starting_idx+8:starting_idx+12])
 
             bottom_faces = self._build_horizontal_faces(starting_idx)
-            middle_faces = self._build_verticle_faces(starting_idx, 4)
+            middle_faces = self._build_vertical_faces(starting_idx, 4)
 
 
             self.faces = np.append(self.faces, bottom_faces)
             self.faces = np.append(self.faces, middle_faces)
 
             if third_group and first_group.is_below(third_group):
-                third_group = self._build_verticle_faces(starting_idx + 4, 8)
+                third_group = self._build_vertical_faces(starting_idx + 4, 8)
                 top_group = self._build_horizontal_faces(starting_idx + 8)
                 self.faces = np.append(self.faces, third_group)
                 self.faces = np.append(self.faces, top_group)
@@ -129,7 +126,7 @@ class QRGenerator3d:
                 number_of_ahead_groups_processed = 1
 
 
- 
+
     def _build_horizontal_faces(self, starting_idx: int, idx_displacement: int = 0) -> np.array:
         """Builds the horizontal faces for a given module in the QR code. """
         
@@ -137,57 +134,57 @@ class QRGenerator3d:
         displacement_factor:int = starting_idx + idx_displacement
 
 
-        part_one = [VERTEX_ORDER.BOTTOM_LEFT + displacement_factor,
-                                       VERTEX_ORDER.TOP_LEFT + displacement_factor ,
-                                       VERTEX_ORDER.BOTTOM_RIGHT + displacement_factor]
+        part_one = [VERTEX_ORDER.SOUTH_WEST + displacement_factor,
+                                       VERTEX_ORDER.NORTH_WEST + displacement_factor ,
+                                       VERTEX_ORDER.SOUTH_EAST + displacement_factor]
         
-        part_two = [VERTEX_ORDER.BOTTOM_RIGHT + displacement_factor,
-                                       VERTEX_ORDER.TOP_RIGHT + displacement_factor,
-                                       VERTEX_ORDER.TOP_LEFT + displacement_factor]
+        part_two = [VERTEX_ORDER.SOUTH_EAST + displacement_factor,
+                                       VERTEX_ORDER.NORTH_EAST + displacement_factor,
+                                       VERTEX_ORDER.NORTH_WEST + displacement_factor]
         return np.array([ part_one, part_two])
 
 
-    def _build_verticle_faces(self, starting_idx:int, idx_displacement:int = 0) -> np.array:
-        """Constructs a set of verticle faces for a given qr code"""
+    def _build_vertical_faces(self, starting_idx:int, idx_displacement:int = 0) -> np.array:
+        """Constructs a set of vertical faces for a given qr code"""
         displacement_factor:int = starting_idx + idx_displacement
 
         return np.array([
 
                 # west side faces
-                                      [ VERTEX_ORDER.TOP_LEFT + displacement_factor,
-                                        VERTEX_ORDER.BOTTOM_LEFT  + displacement_factor,
-                                        VERTEX_ORDER.TOP_LEFT + starting_idx],
+                                      [ VERTEX_ORDER.NORTH_WEST + displacement_factor,
+                                        VERTEX_ORDER.SOUTH_WEST  + displacement_factor,
+                                        VERTEX_ORDER.NORTH_WEST + starting_idx],
 
-                                      [ VERTEX_ORDER.TOP_LEFT + starting_idx ,
-                                        VERTEX_ORDER.BOTTOM_LEFT + starting_idx ,
-                                        VERTEX_ORDER.BOTTOM_LEFT  + displacement_factor],
+                                      [ VERTEX_ORDER.NORTH_WEST + starting_idx ,
+                                        VERTEX_ORDER.SOUTH_WEST + starting_idx ,
+                                        VERTEX_ORDER.SOUTH_WEST  + displacement_factor],
                 # south side faces
-                                     [ VERTEX_ORDER.BOTTOM_LEFT + displacement_factor,
-                                        VERTEX_ORDER.BOTTOM_RIGHT  + displacement_factor,
-                                        VERTEX_ORDER.BOTTOM_RIGHT + starting_idx],  
+                                     [ VERTEX_ORDER.SOUTH_WEST + displacement_factor,
+                                        VERTEX_ORDER.SOUTH_EAST  + displacement_factor,
+                                        VERTEX_ORDER.SOUTH_EAST + starting_idx],  
 
-                                     [ VERTEX_ORDER.BOTTOM_RIGHT + starting_idx ,
-                                        VERTEX_ORDER.BOTTOM_LEFT + starting_idx ,
-                                        VERTEX_ORDER.BOTTOM_LEFT  + displacement_factor] ,
+                                     [ VERTEX_ORDER.SOUTH_EAST + starting_idx ,
+                                        VERTEX_ORDER.SOUTH_WEST + starting_idx ,
+                                        VERTEX_ORDER.SOUTH_WEST  + displacement_factor] ,
                 # east side faces
 
-                                    [ VERTEX_ORDER.TOP_RIGHT + displacement_factor,
-                                        VERTEX_ORDER.BOTTOM_RIGHT  +displacement_factor,
-                                        VERTEX_ORDER.BOTTOM_RIGHT + starting_idx],
+                                    [ VERTEX_ORDER.NORTH_EAST + displacement_factor,
+                                        VERTEX_ORDER.SOUTH_EAST  +displacement_factor,
+                                        VERTEX_ORDER.SOUTH_EAST + starting_idx],
 
-                                      [ VERTEX_ORDER.BOTTOM_RIGHT + starting_idx ,
-                                        VERTEX_ORDER.TOP_RIGHT + starting_idx ,
-                                        VERTEX_ORDER.TOP_RIGHT  + displacement_factor] ,
+                                      [ VERTEX_ORDER.SOUTH_EAST + starting_idx ,
+                                        VERTEX_ORDER.NORTH_EAST + starting_idx ,
+                                        VERTEX_ORDER.NORTH_EAST  + displacement_factor] ,
 
                 #north side faces
 
-                                    [ VERTEX_ORDER.TOP_RIGHT + displacement_factor,
-                                        VERTEX_ORDER.TOP_LEFT  + displacement_factor,
-                                        VERTEX_ORDER.TOP_LEFT + starting_idx],
+                                    [ VERTEX_ORDER.NORTH_EAST + displacement_factor,
+                                        VERTEX_ORDER.NORTH_WEST  + displacement_factor,
+                                        VERTEX_ORDER.NORTH_WEST + starting_idx],
 
-                                      [ VERTEX_ORDER.TOP_LEFT + starting_idx ,
-                                        VERTEX_ORDER.TOP_RIGHT + starting_idx ,
-                                        VERTEX_ORDER.TOP_RIGHT  + displacement_factor] ,
+                                      [ VERTEX_ORDER.NORTH_WEST + starting_idx ,
+                                        VERTEX_ORDER.NORTH_EAST + starting_idx ,
+                                        VERTEX_ORDER.NORTH_EAST  + displacement_factor] ,
                                         
                                         ])
     

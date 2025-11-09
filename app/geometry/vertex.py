@@ -4,10 +4,10 @@ from enum import IntEnum
 
 class VERTEX_ORDER(IntEnum):
     """An enumeration of vertices generated """
-    TOP_LEFT:int = 0
-    BOTTOM_LEFT:int = 1
-    TOP_RIGHT:int = 2
-    BOTTOM_RIGHT:int = 3
+    NORTH_WEST:int = 0
+    SOUTH_WEST:int = 1
+    NORTH_EAST:int = 2
+    SOUTH_EAST:int = 3
 
 @dataclass
 class Vertex:
