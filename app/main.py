@@ -5,8 +5,8 @@ then generates a QR code and takes said code and converts it into a 3d model.
 
 
 import argparse
-from qr_constructor.qr_constructor_3d import QRGenerator3d
-from qr_constructor.qr_constructor_3d import MeshConstructionParams
+from qr_constructor_3d import QRGenerator3d
+from qr_constructor_3d import MeshConstructionParams
 
 def validate_args(args:argparse.Namespace) -> bool:
     """Validates commandline arguments"""

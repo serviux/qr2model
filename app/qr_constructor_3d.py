@@ -3,12 +3,13 @@
 
 import copy
 from dataclasses import dataclass
-from stl import mesh
-from geometry.vertex import VERTEX_ORDER
-from geometry.vertex import Vertex
-from geometry.plane import Plane
 import numpy as np
 import qrcode
+from stl import mesh
+from .geometry.vertex import VERTEX_ORDER
+from .geometry.vertex import Vertex
+from .geometry.plane import Plane
+
 
 
 
@@ -43,9 +44,6 @@ class QRGenerator3d:
 
         return qr
     
-
-
-
 
     def _generate_vertices(self, params:MeshConstructionParams, qr:qrcode.QRCode) -> None:
         """Generate vertices from the given QR code"""
