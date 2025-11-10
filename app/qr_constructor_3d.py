@@ -167,7 +167,7 @@ class QRGenerator3d:
                 # east side faces
 
                                     [ VERTEX_ORDER.NORTH_EAST + displacement_factor,
-                                        VERTEX_ORDER.SOUTH_EAST  +displacement_factor,
+                                        VERTEX_ORDER.SOUTH_EAST  + displacement_factor,
                                         VERTEX_ORDER.SOUTH_EAST + starting_idx],
 
                                       [ VERTEX_ORDER.SOUTH_EAST + starting_idx ,
@@ -175,7 +175,6 @@ class QRGenerator3d:
                                         VERTEX_ORDER.NORTH_EAST  + displacement_factor] ,
 
                 #north side faces
-
                                     [ VERTEX_ORDER.NORTH_EAST + displacement_factor,
                                         VERTEX_ORDER.NORTH_WEST  + displacement_factor,
                                         VERTEX_ORDER.NORTH_WEST + starting_idx],
@@ -187,14 +186,10 @@ class QRGenerator3d:
                                         ])
     
 
-    def _reshape_lists(self) -> None:
-        """reshapes the faces and vetices lists into the proper shape
+    def _reshape_face_list(self) -> None:
+        """reshapes the faces list into the proper shape
         reshapes into  a 2d array of shape (n, 3) where n is the starting shape divided by 3"""
-        #vert_list_len:int = self.vertices.size
         face_list_len:int = self.faces.size
-
-
-        #self.vertices = self.vertices.reshape((vert_list_len//3, 3))
         self.faces = self.faces.reshape((face_list_len//3, 3))
 
 
@@ -202,7 +197,7 @@ class QRGenerator3d:
         
         self._generate_vertices(params, qr)
         self._build_faces()
-        self._reshape_lists()
+        self._reshape_face_list()
 
 
         vertices_as_list = [vert.to_list() for vert in self.vertices]
