@@ -29,15 +29,26 @@ class Plane:
             south_east=iterable[VERTEX_ORDER.SOUTH_EAST]
         )
 
-    def is_below(self, other_plane: 'Plane') -> bool:
+    def check_geo_constraints(self, other_plane: 'Plane') -> bool:
         """
-        Check if the current plane's vertices are all less than another given plane's vertices.
+        Check if the current plane's vertices are all properly constrained underneath the other plane.
 
         :param other_plane: The plane to compare against.
         :return: True if each vertex of this plane has coordinates less than the corresponding vertex of the other plane.
         """
-        return (self.north_west.is_below(other_plane.north_west) and
-                self.south_west.is_below(other_plane.SOUTH_WEST) and
-                self.north_east.is_below(other_plane.top_right) and
-                self.south_east.is_below(other_plane.bottom_right))
+        return (self.north_west.check_geo_constraints(other_plane.north_west) and
+                self.south_west.check_geo_constraints(other_plane.south_west) and
+                self.north_east.check_geo_constraints(other_plane.north_east) and
+                self.south_east.check_geo_constraints(other_plane.south_east))
+    
+
+    def distance_to_other(self, other_plane: 'Plane') -> float:
+        """ gets the distance of all vertices to the other plane's vertices"""
+        return (self.north_east.dist_from_other(other_plane.north_east) +
+            self.north_west.dist_from_other(other_plane.north_west) +
+            self.south_east.dist_from_other(other_plane.south_east) +
+            self.south_west.dist_from_other(other_plane.south_west)
+        ) / 4
+
+        
 

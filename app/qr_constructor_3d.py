@@ -6,9 +6,9 @@ from dataclasses import dataclass
 import numpy as np
 import qrcode
 from stl import mesh
-from .geometry.vertex import VERTEX_ORDER
-from .geometry.vertex import Vertex
-from .geometry.plane import Plane
+from geometry.vertex import VERTEX_ORDER
+from geometry.vertex import Vertex
+from geometry.plane import Plane
 
 
 
@@ -100,11 +100,28 @@ class QRGenerator3d:
 
             #Determine if third grouping is above the first_group in order to determine the number of verticle walls to make.
             first_group:Plane =   Plane.from_iterable(self.vertices[starting_idx:starting_idx+4])
+            second_group:Plane =   Plane.from_iterable(self.vertices[starting_idx+4:starting_idx+8])
             third_group:Plane = None
 
             if starting_idx + 12 <= len(self.vertices):
                 third_group:Plane =   Plane.from_iterable(self.vertices[starting_idx+8:starting_idx+12])
+            
+            first_to_second = first_group.distance_to_other(second_group)
+            if(first_to_second > 10):
+                print("bigg distance")
+            if(third_group is not None):
 
+                first_to_third = first_group.distance_to_other(third_group)
+                second_to_third = second_group.distance_to_other(third_group)
+                print(f"1to2: {first_to_second:2f} | 1to3: {first_to_third:2f}  | 2to3: {second_to_third:2f}")
+                if(first_to_third > 10 or second_to_third > 10):
+                    print("bigg distance")
+
+            else: 
+                print(f"1to2: {first_to_second:2f} | 1to3: N/a  | 2to3: N/a")
+
+        
+                
             bottom_faces = self._build_horizontal_faces(starting_idx)
             middle_faces = self._build_vertical_faces(starting_idx, 4)
 
@@ -112,7 +129,7 @@ class QRGenerator3d:
             self.faces = np.append(self.faces, bottom_faces)
             self.faces = np.append(self.faces, middle_faces)
 
-            if third_group and first_group.is_below(third_group):
+            if third_group and first_group.check_geo_constraints(third_group):
                 third_group = self._build_vertical_faces(starting_idx + 4, 8)
                 top_group = self._build_horizontal_faces(starting_idx + 8)
                 self.faces = np.append(self.faces, third_group)
