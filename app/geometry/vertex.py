@@ -16,7 +16,7 @@ class Vertex:
     x:int = 0
     y:int = 0
     z:int = 0
-
+    idx:int = None
     def transform(self, a:int, b:int, c:int) ->  'Vertex':
         """Transforms the vertex's coordinates by a given matrix"""
         self.x += a

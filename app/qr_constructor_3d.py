@@ -49,6 +49,7 @@ class QRGenerator3d:
         """Generate vertices from the given QR code"""
         #loop through each row of the QR code and check if the module is a black or white pixel
         #and generate a series of vertices for 
+
         for starting_idx,  module in enumerate(qr.modules):
             for j, toggle in enumerate(module):
 
@@ -64,19 +65,20 @@ class QRGenerator3d:
                    
                             ]
 
+               
 
                 for i, vert in  enumerate(layer_one):
                    layer_one[i] = vert.scale(params.size, params.size, 1)
                    layer_one[i] = vert.transform(j,starting_idx,0)
 
 
-
-
                 layer_two  = copy.deepcopy(layer_one)
                 
                 for i, vert in enumerate(layer_two):
                    layer_two[i] = vert.transform(0,0, params.depth)
-                
+
+                    
+                   
                 self.vertices = np.append(self.vertices, layer_one, axis=0)
                 self.vertices = np.append(self.vertices, layer_two, axis=0)
 
@@ -84,12 +86,18 @@ class QRGenerator3d:
                     layer_three = copy.deepcopy(layer_two)
                     for i, vert in enumerate(layer_three):
                         layer_three[i] = vert.transform(0,0, params.true_depth)
+
                     self.vertices = np.append(self.vertices, layer_three)
-        
+
+
+    def _index_vertices(self) -> None:
+        """fills the idx property of each vertex object"""
+        for i, _ in enumerate(self.vertices):
+            self.vertices[i].idx = i
+
 
     def _build_faces(self) -> None:
         """Generate the faces of the 3d model from the list of vertices"""
-        
         number_of_ahead_groups_processed = 0
 
         for starting_idx in range(0, len(self.vertices), 4):
@@ -98,7 +106,7 @@ class QRGenerator3d:
                 number_of_ahead_groups_processed -= 1
                 continue
 
-            #Determine if third grouping is above the first_group in order to determine the number of verticle walls to make.
+            #Determine if third grouping is above the first_group in order to determine the number of vertical walls to make.
             first_group:Plane =   Plane.from_iterable(self.vertices[starting_idx:starting_idx+4])
             second_group:Plane =   Plane.from_iterable(self.vertices[starting_idx+4:starting_idx+8])
             third_group:Plane = None
@@ -122,85 +130,82 @@ class QRGenerator3d:
 
         
                 
-            bottom_faces = self._build_horizontal_faces(starting_idx)
-            middle_faces = self._build_vertical_faces(starting_idx, 4)
+            bottom_faces = self._build_horizontal_faces(first_group)
+            middle_faces = self._build_vertical_faces(first_group, second_group)
 
 
             self.faces = np.append(self.faces, bottom_faces)
             self.faces = np.append(self.faces, middle_faces)
 
             if third_group and first_group.check_geo_constraints(third_group):
-                third_group = self._build_vertical_faces(starting_idx + 4, 8)
-                top_group = self._build_horizontal_faces(starting_idx + 8)
-                self.faces = np.append(self.faces, third_group)
-                self.faces = np.append(self.faces, top_group)
+                upper_faces = self._build_vertical_faces(second_group, third_group)
+                top_faces = self._build_horizontal_faces(third_group)
+                self.faces = np.append(self.faces, upper_faces)
+                self.faces = np.append(self.faces, top_faces)
                 number_of_ahead_groups_processed = 2
             else:
-                top_group = self._build_horizontal_faces(starting_idx + 4)
+                top_group = self._build_horizontal_faces(second_group)
                 self.faces = np.append(self.faces, top_group)
                 number_of_ahead_groups_processed = 1
 
 
 
-    def _build_horizontal_faces(self, starting_idx: int, idx_displacement: int = 0) -> np.array:
+    def _build_horizontal_faces(self,  plane:Plane) -> np.array:
         """Builds the horizontal faces for a given module in the QR code. """
         
         
-        displacement_factor:int = starting_idx + idx_displacement
-
-
-        part_one = [VERTEX_ORDER.SOUTH_WEST + displacement_factor,
-                                       VERTEX_ORDER.NORTH_WEST + displacement_factor ,
-                                       VERTEX_ORDER.SOUTH_EAST + displacement_factor]
+        part_one = [plane.south_west.idx, 
+                    plane.north_west.idx,
+                    plane.south_east.idx]
+        part_two = [plane.south_east.idx,
+                    plane.north_east.idx,
+                    plane.north_west.idx]
         
-        part_two = [VERTEX_ORDER.SOUTH_EAST + displacement_factor,
-                                       VERTEX_ORDER.NORTH_EAST + displacement_factor,
-                                       VERTEX_ORDER.NORTH_WEST + displacement_factor]
         return np.array([ part_one, part_two])
 
 
-    def _build_vertical_faces(self, starting_idx:int, idx_displacement:int = 0) -> np.array:
+    def _build_vertical_faces(self, lower_plane:Plane, upper_plane:Plane) -> np.array:
         """Constructs a set of vertical faces for a given qr code"""
-        displacement_factor:int = starting_idx + idx_displacement
 
         return np.array([
 
-                # west side faces
-                                      [ VERTEX_ORDER.NORTH_WEST + displacement_factor,
-                                        VERTEX_ORDER.SOUTH_WEST  + displacement_factor,
-                                        VERTEX_ORDER.NORTH_WEST + starting_idx],
+            #west side faces
+                            [upper_plane.north_west.idx,
+                             upper_plane.south_west.idx,
+                             lower_plane.north_west.idx ],
 
-                                      [ VERTEX_ORDER.NORTH_WEST + starting_idx ,
-                                        VERTEX_ORDER.SOUTH_WEST + starting_idx ,
-                                        VERTEX_ORDER.SOUTH_WEST  + displacement_factor],
-                # south side faces
-                                     [ VERTEX_ORDER.SOUTH_WEST + displacement_factor,
-                                        VERTEX_ORDER.SOUTH_EAST  + displacement_factor,
-                                        VERTEX_ORDER.SOUTH_EAST + starting_idx],  
+                            [lower_plane.north_west.idx,
+                             lower_plane.south_west.idx,
+                             upper_plane.south_west.idx],
 
-                                     [ VERTEX_ORDER.SOUTH_EAST + starting_idx ,
-                                        VERTEX_ORDER.SOUTH_WEST + starting_idx ,
-                                        VERTEX_ORDER.SOUTH_WEST  + displacement_factor] ,
-                # east side faces
+            #south side faces
+                            [ upper_plane.south_west.idx,
+                              upper_plane.south_east.idx,
+                              lower_plane.south_east.idx],
 
-                                    [ VERTEX_ORDER.NORTH_EAST + displacement_factor,
-                                        VERTEX_ORDER.SOUTH_EAST  + displacement_factor,
-                                        VERTEX_ORDER.SOUTH_EAST + starting_idx],
+                            [lower_plane.south_east.idx,
+                             lower_plane.south_west.idx,
+                             upper_plane.south_west.idx],
 
-                                      [ VERTEX_ORDER.SOUTH_EAST + starting_idx ,
-                                        VERTEX_ORDER.NORTH_EAST + starting_idx ,
-                                        VERTEX_ORDER.NORTH_EAST  + displacement_factor] ,
+            #east side faces 
+                            [upper_plane.north_east.idx,
+                             upper_plane.south_east.idx,
+                             lower_plane.south_east.idx],
 
-                #north side faces
-                                    [ VERTEX_ORDER.NORTH_EAST + displacement_factor,
-                                        VERTEX_ORDER.NORTH_WEST  + displacement_factor,
-                                        VERTEX_ORDER.NORTH_WEST + starting_idx],
+                            [lower_plane.south_east.idx,
+                             lower_plane.north_east.idx,
+                             upper_plane.north_east.idx],
 
-                                      [ VERTEX_ORDER.NORTH_WEST + starting_idx ,
-                                        VERTEX_ORDER.NORTH_EAST + starting_idx ,
-                                        VERTEX_ORDER.NORTH_EAST  + displacement_factor] ,
-                                        
-                                        ])
+            #north side faces 
+                            [upper_plane.north_east.idx, 
+                             upper_plane.north_west.idx,
+                             lower_plane.north_west.idx],
+
+                            [lower_plane.north_west.idx,
+                             lower_plane.north_east.idx,
+                             upper_plane.north_east.idx]
+                                       
+                        ])
     
 
     def _reshape_face_list(self) -> None:
@@ -213,6 +218,7 @@ class QRGenerator3d:
     def construct_mesh(self, params:MeshConstructionParams, qr:qrcode.QRCode) -> mesh.Mesh:
         
         self._generate_vertices(params, qr)
+        self._index_vertices()
         self._build_faces()
         self._reshape_face_list()
 
