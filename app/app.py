@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(filename="server.log", encoding="utf-8", level=logging.INFO)
 app = FastAPI()
 
-#app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 templates = Jinja2Templates(directory="templates")

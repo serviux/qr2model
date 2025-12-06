@@ -4,9 +4,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>QR Code To Model</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="/static/js/website.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> 
   </head>
   <body>
-    <h1>Hello, world!</h1>
+    <h1>Convert a message to a 3D QR Code</h1>
+    <main>
+	<form>
+		<div class="form-group">
+    			<label for="size">Size</label>
+    			<input type="text" class="form-control" id="size" aria-describedby="sizeHelp">
+    			<small id="sizeHelp" class="form-text text-muted">The size which each QR sqaure would be</small>
+  		</div>
+  		<div class="form-group">
+    			<label for="depth">Depth</label>
+    			<input type="text" class="form-control" id="depth" aria-describedby="depthHelp">
+    			<small id="depthHelp" class="form-text text-muted">The depth for a QR module that is false</small>
+  		</div>
+		<div class="form-group">
+    			<label for="true_depth">True depth</label>
+    			<input type="text" class="form-control" id="true_depth" aria-describedby="trueDepthHelp">
+    			<small id="trueDepthHelp" class="form-text text-muted">The depth for a QR module which is considered true</small>
+  		</div>
+		<div class="form-group">
+    			<label for="message">Message</label>
+    			<input type="text" class="form-control" id="message" aria-describedby="messageHelp">
+    			<small id="messageHelp" class="form-text text-muted">The message to be encoded</small>
+  		</div>
+  		<button type="submit" class="btn btn-primary" onclick="submit_form">Submit</button>
+	</form>    
+    </main>
   </body>
 </html>
