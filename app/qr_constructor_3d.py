@@ -6,9 +6,10 @@ from dataclasses import dataclass
 import numpy as np
 import qrcode
 from stl import mesh
-from geometry.vertex import VERTEX_ORDER
-from geometry.vertex import Vertex
-from geometry.plane import Plane
+
+from .geometry.vertex import VERTEX_ORDER
+from .geometry.vertex import Vertex
+from .geometry.plane import Plane
 
 
 
@@ -30,14 +31,14 @@ class QRGenerator3d:
         self.faces = np.empty((0), dtype=np.dtype(np.int64))
 
 
-    def generate_qr_code(self, message:str) -> qrcode.QRCode:
-        """Generate a QR code from the given message"""
+    def generate_qr_code(self) -> qrcode.QRCode:
+        """Generate a QR code from the message given in the constructor"""
         qr = qrcode.QRCode(
                         error_correction=qrcode.constants.ERROR_CORRECT_L,
                         box_size=10,
                         border=4)
 
-        qr.add_data(message)
+        qr.add_data(self.qr_message)
         qr.make()
 
 
@@ -217,8 +218,13 @@ class QRGenerator3d:
         return qr_mesh
     
 
-    def save_mesh(self, qr_mesh:mesh.Mesh) -> None:
-        """Saves the mesh to the given file name"""
+    def save_mesh(self, qr_mesh:mesh.Mesh) -> str:
+        """Saves the mesh to the given file name
         
-        filename = f"qr_mesh_{hash(self)}.stl"
+        :returns filepath to saved object
+        """
+       
+        filename = f"/tmp/qr_mesh_{hash(self)}.stl"
         qr_mesh.save(filename)
+
+        return filename
