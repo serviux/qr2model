@@ -1,32 +1,46 @@
  function send_request(data) {
 	const url = "/qr"
+	console.log(`url: ${url}`)
 	const headers = {
 		"Content-Type": "application/json"	
 	}
 	fetch(url, {
 		method: "POST", 
 		headers: headers,
-		body: JSON.stringify(dat)
+		body: JSON.stringify(data)
 	})
-	.then(response.blob())
-	.then(blob => {downloadBlob(blob, 'qrcode.stl')})
+	.then( resp => resp.blob())
+	.then(blob => download_blob(blob))
 
 	
 }
 
-function submit_form() {
-	let size = document.querySelector("#size").value
-	let depth = document.querySelector("#depth").value
-	let true_depth = document.querySelector("#true_depth").value
-	let message = document.querySelector("#message").value
+function  download_blob(blob) {
 
-	if(size === null) {
+	const file_url = URL.createObjectURL(blob)
+	const dlink = document.createElement('a')
+	dlink.href = file_url	
+	dlink.classlist.append(".dlink")	
+	dlink.download = "QR_3D.stl"
+	document.body.appendChild(dlink)
+	dlink.click()
+}
+
+
+function submit_form() {
+	let size = parseInt(document.querySelector("#size").value)
+	let depth = parseInt(document.querySelector("#depth").value)
+	let true_depth = parseInt(document.querySelector("#true_depth").value)
+	const message = parseInt(document.querySelector("#message").value)
+
+	//defaults
+	if(size <= 0 || size === null) {
 		size = 1
 	}
-	if(depth === null) {
+	if(depth <= 0 || depth === null) {
 		depth = 1
 	}	
-	if(true_depth === null) {
+	if(true_depth <= 0 || true_depth === null) {
 		true_depth = 1
 	}
 	if(message === null) {
@@ -35,7 +49,7 @@ function submit_form() {
 
 	
 
-	let data = {
+	const data = {
 		"size": size,
 		"depth": depth,
 		"true_depth": true_depth,
@@ -43,11 +57,12 @@ function submit_form() {
 
 	}
 
-	let resp =  send_request(data)
+	const resp =  send_request(data)
 
 
 	
 }
 
 
-
+function cleanup() {
+}
