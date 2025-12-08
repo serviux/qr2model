@@ -1,4 +1,6 @@
- function send_request(data) {
+const urls_to_free = [] 
+
+function send_request(data) {
 	const url = "/qr"
 	console.log(`url: ${url}`)
 	const headers = {
@@ -18,9 +20,10 @@
 function  download_blob(blob) {
 
 	const file_url = URL.createObjectURL(blob)
+	urls_to_free.push(file_url)
 	const dlink = document.createElement('a')
 	dlink.href = file_url	
-	dlink.classlist.append(".dlink")	
+	dlink.classList.add("dlink")	
 	dlink.download = "QR_3D.stl"
 	document.body.appendChild(dlink)
 	dlink.click()
@@ -57,7 +60,7 @@ function submit_form() {
 
 	}
 
-	const resp =  send_request(data)
+	send_request(data)
 
 
 	
@@ -65,4 +68,11 @@ function submit_form() {
 
 
 function cleanup() {
+	document.querySelectorAll(".dlink").forEach(ele => ele.remove(ele))
+	urls_to_free.forEach(url => URL.revokeObjectURL(url))
+	while (urls_to_free.length) {
+		urls_to_free.pop()	
+	}
 }
+
+setInterval(cleanup, 30000)
