@@ -37,14 +37,16 @@ async def home(request: Request):
     return templates.TemplateResponse( request=request, name="index.html")
 
 
-@app.get("/error")
-async def throw_error(request: Request):
-    1/0 
-    return {"message": "this does not work"}
-
 @app.post("/qr")
 async def qr_generation(request: Request):
-        
+    """
+    constructs a qr code as a 3d object, by creating a depth for when a module is false, 
+    and another depth for when a module is considered true
+
+    :request request: a request object containing a json body
+    :returns FileResponse: a blob containing an stl
+    
+    """
     body = await request.json() 
     if not validate_request_body(body):
         return status.HTTP_400_BAD_REQUEST 
