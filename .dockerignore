@@ -1,0 +1,6 @@
+.git/
+.github/
+env/
+unit_tests/
+*.log
+.gitignore/

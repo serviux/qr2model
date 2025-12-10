@@ -6,9 +6,10 @@ from dataclasses import dataclass
 import numpy as np
 import qrcode
 from stl import mesh
-from geometry.vertex import VERTEX_ORDER
-from geometry.vertex import Vertex
-from geometry.plane import Plane
+
+from .geometry.vertex import VERTEX_ORDER
+from .geometry.vertex import Vertex
+from .geometry.plane import Plane
 
 
 
@@ -30,17 +31,16 @@ class QRGenerator3d:
         self.faces = np.empty((0), dtype=np.dtype(np.int64))
 
 
-    def generate_qr_code(self, message:str) -> qrcode.QRCode:
-        """Generate a QR code from the given message"""
+    def generate_qr_code(self) -> qrcode.QRCode:
+        """Generate a QR code from the message given in the constructor"""
         qr = qrcode.QRCode(
                         error_correction=qrcode.constants.ERROR_CORRECT_L,
                         box_size=10,
                         border=4)
 
-        qr.add_data(message)
+        qr.add_data(self.qr_message)
         qr.make()
 
-        img = qr.make_image(fill_color="black", back_color="white")
 
         return qr
     
@@ -114,21 +114,6 @@ class QRGenerator3d:
             if starting_idx + 12 <= len(self.vertices):
                 third_group:Plane =   Plane.from_iterable(self.vertices[starting_idx+8:starting_idx+12])
             
-            first_to_second = first_group.distance_to_other(second_group)
-            if(first_to_second > 10):
-                print("bigg distance")
-            if(third_group is not None):
-
-                first_to_third = first_group.distance_to_other(third_group)
-                second_to_third = second_group.distance_to_other(third_group)
-                print(f"1to2: {first_to_second:2f} | 1to3: {first_to_third:2f}  | 2to3: {second_to_third:2f}")
-                if(first_to_third > 10 or second_to_third > 10):
-                    print("bigg distance")
-
-            else: 
-                print(f"1to2: {first_to_second:2f} | 1to3: N/a  | 2to3: N/a")
-
-        
                 
             bottom_faces = self._build_horizontal_faces(first_group)
             middle_faces = self._build_vertical_faces(first_group, second_group)
@@ -233,8 +218,13 @@ class QRGenerator3d:
         return qr_mesh
     
 
-    def save_mesh(self, qr_mesh:mesh.Mesh) -> None:
-        """Saves the mesh to the given file name"""
+    def save_mesh(self, qr_mesh:mesh.Mesh) -> str:
+        """Saves the mesh to the given file name
         
-        filename = f"qr_mesh_{hash(self)}.stl"
+        :returns filepath to saved object
+        """
+       
+        filename = f"/tmp/qr_mesh_{hash(self)}.stl"
         qr_mesh.save(filename)
+
+        return filename
