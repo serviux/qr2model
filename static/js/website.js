@@ -11,7 +11,12 @@ function send_request(data) {
 		headers: headers,
 		body: JSON.stringify(data)
 	})
-	.then( resp => resp.blob())
+	.then( function(response) {
+		if(!response.ok) {
+			throw new Error("Bad Requeset")
+		}
+		return response.blob()
+	})
 	.then(blob => download_blob(blob))
 
 	
@@ -34,7 +39,7 @@ function submit_form() {
 	let size = parseInt(document.querySelector("#size").value)
 	let depth = parseInt(document.querySelector("#depth").value)
 	let true_depth = parseInt(document.querySelector("#true_depth").value)
-	const message = parseInt(document.querySelector("#message").value)
+	const message = document.querySelector("#message").value
 
 	//defaults
 	if(size <= 0 || size === null) {
@@ -45,9 +50,6 @@ function submit_form() {
 	}	
 	if(true_depth <= 0 || true_depth === null) {
 		true_depth = 1
-	}
-	if(message === null) {
-		return	
 	}
 
 	
