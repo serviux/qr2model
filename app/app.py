@@ -22,11 +22,11 @@ templates = Jinja2Templates(directory="templates")
 def validate_request_body(body) -> bool: 
     valid = True
 
-    if body["size"] <= 0:
+    if body["size"] is None or body["size"] <= 0:
         valid = False
-    if body["depth"] <= 0:
+    if body["depth"] is None or body["depth"] <= 0:
         valid = False
-    if body["true_depth"] <= 0:
+    if body["true_depth"] is None or body["true_depth"] <= 0:
         valid = False
     if body["message"] is None:
         valid = False
